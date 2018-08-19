@@ -156,6 +156,8 @@ function startClock() {
     clockID = setInterval(() => {
         time++;
         console.log(time);
+        const clock = document.querySelector('.clock');
+        clock.innerHTML = time;
     }, 1000);  
 }
 
