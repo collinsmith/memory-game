@@ -40,24 +40,9 @@ shuffleDeck();
 /*
  * set up the event listener for a card. If a card is clicked:
  */
- document.addEventListener('click', function () {
+document.addEventListener('click', function () {
     console.log('The document was clicked');
- }, true);
-
-
-
-deck.addEventListener('click', event => {
-    const clickTarget = event.target;
-    if (isClickValid(clickTarget)
-    ) {
-        toggleCard(clickTarget);
-        addToggleCard(clickTarget);
-        console.log('open show was toggled');   
-        if (toggledCards.length === 2) {
-            console.log('2 cards!');
-        }
-    }
-});
+}, true);
 
 function isClickValid(clickTarget) {
     return (
@@ -84,11 +69,13 @@ function addToggleCard(clickTarget) {
  */
  let toggledCards = [];
 
+ let checkingForMatch = false;
  
  /* 
  *  - if the list already has another card, check to see if the two cards match
  */
 function checkForMatch() {
+	checkingForMatch = true;
     if (
         toggledCards[0].firstElementChild.className ===
         toggledCards[1].firstElementChild.className
@@ -96,6 +83,7 @@ function checkForMatch() {
         toggledCards[0].classList.toggle('match');
         toggledCards[1].classList.toggle('match');
         toggledCards = [];
+        checkingForMatch = false;
         console.log('match!');
     } else {
         console.log('Not a match!');
@@ -103,18 +91,32 @@ function checkForMatch() {
             toggleCard(toggledCards[0]);
             toggleCard(toggledCards[1]);
             toggledCards = [];
-    }, 1000);
-}
+        	checkingForMatch = false;
+        }, 1000);
+    }
 };
 
 deck.addEventListener('click', event => {
     const clickTarget = event.target;
-    if (toggledCards.length === 2) {
+    if (toggledCards.length === 2 && !checkingForMatch) {
         checkForMatch();
         console.log("checked for match");
         addMove();
         checkScore();
     };
+});
+
+deck.addEventListener('click', event => {
+    const clickTarget = event.target;
+    if (isClickValid(clickTarget) && toggledCards.length < 2 && !checkingForMatch
+    ) {
+        toggleCard(clickTarget);
+        addToggleCard(clickTarget);
+        console.log('open show was toggled');   
+        if (toggledCards.length === 2) {
+            console.log('2 cards!');
+        }
+    }
 });
 
 /*    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
@@ -150,7 +152,6 @@ function hideStar(){
 let clockOff = true;
 let time = 0;
 let clockId;
-
 
 function startClock() {
     clockID = setInterval(() => {
